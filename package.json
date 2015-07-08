@@ -2,11 +2,11 @@
   "name": "soap-x509-http",
   "version": "0.1.0",
   "description": "An x509 http client for node-soap",
-  "main": "X509HttpClient.js",
+  "main": "./X509HttpClient.js",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/front/node-soap"
+    "url": "https://github.com/front/soap-x509-http"
   },
   "keywords": [
     "soap",
@@ -16,9 +16,9 @@
   "author": "Elio Cro <elio@front.no>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/front/node-soap/issues"
+    "url": "https://github.com/front/soap-x509-http/issues"
   },
-  "homepage": "https://github.com/front/node-soap",
+  "homepage": "https://github.com/front/soap-x509-http",
   "dependencies": {
     "debug": "^2.2.0",
     "q": "^1.4.1",
