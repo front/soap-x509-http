@@ -172,6 +172,8 @@ X509HttpClient.prototype.request = function(url, data, callback, exheaders, exop
   function (err) {
     callback(err);
   });
+
+  return {};
 };
 
 
