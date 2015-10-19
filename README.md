@@ -1,9 +1,10 @@
 # soap-x509-http
-> An X.509 http client for [node-soap](https://github.com/vpulim/node-soap).
+> An X.509 http client for [node-soap](https://github.com/vpulim/node-soap) (v0.9.3).
 
 This module provides an HTTP client for accessing web services that require X.509 certificates.
 It's based on [node-soap](https://github.com/vpulim/node-soap)'s default HTTP client and relies on [ws.js](https://github.com/yaronn/ws.js) for the signing process.
 
+Note: It requires **node-soap v0.9.3** (breaks on 0.9.4 due to a change on the wsdl request method).
 
 ## Install
 
