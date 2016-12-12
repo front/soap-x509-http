@@ -1,6 +1,6 @@
 {
   "name": "soap-x509-http",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "An x509 http client for node-soap",
   "main": "./X509HttpClient.js",
   "scripts": {},
@@ -20,9 +20,9 @@
   },
   "homepage": "https://github.com/front/soap-x509-http",
   "dependencies": {
-    "debug": "^2.2.0",
-    "q": "^1.4.1",
-    "request": "^2.58.0",
-    "ws.js": "0.0.20"
+    "debug": "^2.3.0",
+    "q": "^1.4.0",
+    "request": "^2.79.0",
+    "ws.js": "~2.0.0"
   }
 }
