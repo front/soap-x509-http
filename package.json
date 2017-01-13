@@ -1,6 +1,6 @@
 {
   "name": "soap-x509-http",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An x509 http client for node-soap",
   "main": "./X509HttpClient.js",
   "scripts": {},
