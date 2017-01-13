@@ -42,12 +42,6 @@ var wsdl = './WebService.wsdl';
 var args = {name: 'value'};
 
 soap.createClient(wsdl, {
-  wsdl_options: {
-    pfx: fs.readFileSync('<your-client-certificate.pfx>'),
-    passphrase: '<password>',
-    ca: fs.readFileSync('<ca-certificate.pem>'),
-    rejectUnauthorized: false
-  },
   httpClient: myX509Client
 },
 function(err, client) {
