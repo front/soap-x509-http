@@ -1,10 +1,9 @@
 # soap-x509-http
-> An X.509 http client for [node-soap](https://github.com/vpulim/node-soap) (v0.9.3).
+> An X.509 http client for [node-soap](https://github.com/vpulim/node-soap)
 
 This module provides an HTTP client for accessing web services that require X.509 certificates.
 It's based on [node-soap](https://github.com/vpulim/node-soap)'s default HTTP client and relies on [ws.js](https://github.com/yaronn/ws.js) for the signing process.
 
-Note: It requires **node-soap v0.9.3** (breaks on 0.9.4 due to a change on the wsdl request method).
 
 ## Install
 
@@ -24,6 +23,7 @@ This example assumes that the web service requires a TLS client certificate. If 
 
 
 ```
+var fs = require('fs');
 var soap = require('soap');
 var X509HttpClient = require('soap-x509-http');
 
@@ -38,12 +38,12 @@ var myX509Client = new X509HttpClient({
 });
 
 
-var url = 'http://example.com/wsdl?wsdl';
+var wsdl = './WebService.wsdl';
 var args = {name: 'value'};
 
-soap.createClient(url, {
+soap.createClient(wsdl, {
   wsdl_options: {
-  	pfx: fs.readFileSync('<your-client-certificate.pfx>'),
+    pfx: fs.readFileSync('<your-client-certificate.pfx>'),
     passphrase: '<password>',
     ca: fs.readFileSync('<ca-certificate.pem>'),
     rejectUnauthorized: false
@@ -51,6 +51,8 @@ soap.createClient(url, {
   httpClient: myX509Client
 },
 function(err, client) {
+  client.setEndpoint('<webservice-endpoint>');
+
   client.MyFunction(args, function(err, result) {
     console.log(result);
   });
