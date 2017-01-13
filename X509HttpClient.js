@@ -1,11 +1,12 @@
 /*
-* Copyright (c) 2015 Elio Cro <elio@front.no>
+* Copyright (c) 2017 Elio Cro <elio@front.no>
 *
 * Based on original code by:
 * Copyright (c) 2011 Vinay Pulim <vinay@milewise.com>
 *
 * MIT Licensed
 */
+'use strict';
 
 var q = require('q');
 var request = require('request');
@@ -24,18 +25,14 @@ function X509HttpClient(options, credentials) {
 */
 X509HttpClient.prototype.buildRequest = function(url, data, exheaders, exoptions) {
   var headers = {
-    'User-Agent': 'X509HttpClient/0.1 (node-soap)',
+    'User-Agent': 'X509HttpClient/1.0 (node-soap)',
     'Accept': 'text/html,application/xhtml+xml,application/xml,text/xml;q=0.9,*/*;q=0.8',
     'Accept-Encoding': 'none',
     'Accept-Charset': 'utf-8',
-    'Connection': 'close'
+    'Connection': 'close',
+    'Content-Length': Buffer.byteLength(data, 'utf8')
   };
   var attr;
-
-  if (typeof data === 'string') {
-    headers['Content-Length'] = Buffer.byteLength(data, 'utf8');
-    headers['Content-Type'] = 'application/x-www-form-urlencoded';
-  }
 
   exheaders = exheaders || {};
   for (attr in exheaders) {
@@ -83,28 +80,6 @@ X509HttpClient.prototype.handleResponse = function(req, res, body) {
 
 
 /*
-*   Replaces the default soap namespace with the 1.2 version.
-*   This is required until node-soap's #627 pull request is accepted.
-*/
-X509HttpClient.prototype.fixSOAP12ns = function (data) {
-  if(typeof data === 'string') {
-    return data.replace(
-      'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
-      'xmlns:soap="http://www.w3.org/2003/05/soap-envelope"');
-  }
-};
-
-
-/*
-*   Replaces the content-type header with the soap 1.2 version.
-*   This is required until node-soap's #627 pull request is accepted.
-*/
-X509HttpClient.prototype.fixSOAP12header = function (options) {
-  options.headers['Content-Type'] = 'application/soap+xml; charset=utf-8';
-};
-
-
-/*
 *   Sign the xml with the client key
 */
 X509HttpClient.prototype.signXML = function (data, url, action) {
@@ -146,18 +121,21 @@ X509HttpClient.prototype.signXML = function (data, url, action) {
 
 X509HttpClient.prototype.request = function(url, data, callback, exheaders, exoptions) {
   debug('Source xml: %j', data);
-
   var self = this;
-  var xml = self.fixSOAP12ns(data);
+
+  // Set SOAP 1.2 namespace
+  var xml = data.replace(
+    'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
+    'xmlns:soap="http://www.w3.org/2003/05/soap-envelope"');
   var action = exheaders.SOAPAction && exheaders.SOAPAction.replace(/"/g, '') || '';
 
   // Sign xml
   self.signXML(xml, url, action)
   .then(function (signed) {
 
-    // Build request and fix header
+    // Build request and set SOAP 1.2 header
     var options = self.buildRequest(url, signed.request, exheaders, exoptions);
-    self.fixSOAP12header(options);
+    options.headers['Content-Type'] = 'application/soap+xml; charset=utf-8';
 
     // Make the request
     var req = request(options, function (err, res, body) {
@@ -169,11 +147,7 @@ X509HttpClient.prototype.request = function(url, data, callback, exheaders, exop
       callback(null, res, body);
     });
   },
-  function (err) {
-    callback(err);
-  });
-
-  return {};
+  callback);
 };
 
 
