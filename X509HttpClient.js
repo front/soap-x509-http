@@ -14,11 +14,11 @@ var ws = require('ws.js');
 var debug = require('debug')('soap-x509-http');
 
 
-function X509HttpClient(options, credentials) {
+function X509HttpClient(options, credentials, signElements) {
   this._options = options || {};
   this._credentials = credentials;
+  this._signElements = signElements|| ['Body', 'Timestamp'];
 }
-
 
 /*
 *   Build the request options object
@@ -90,9 +90,11 @@ X509HttpClient.prototype.signXML = function (data, url, action) {
   });
 
   var signature = new ws.Signature(x509);
-  signature.addReference('//*[local-name(.)=\'Body\']');
-  signature.addReference('//*[local-name(.)=\'Timestamp\']');
-
+  this._signElements.forEach(function(signElement){
+    debug('Signing Element:' + signElement);
+    signature.addReference('//*[local-name(.)=' + '\'' + signElement + '\']');
+  });
+  
   var security = new ws.Security({}, [ x509, signature ]);
   var addressing = new ws.Addr('http://www.w3.org/2005/08/addressing');
 
@@ -121,8 +123,8 @@ X509HttpClient.prototype.signXML = function (data, url, action) {
 
 X509HttpClient.prototype.request = function(url, data, callback, exheaders, exoptions) {
   debug('Source xml: %j', data);
+  
   var self = this;
-
   // Set SOAP 1.2 namespace
   var xml = data.replace(
     'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
